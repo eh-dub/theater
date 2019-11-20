@@ -1,4 +1,6 @@
 <script>
+  import {quintInOut} from 'svelte/easing';
+  import {flip} from 'svelte/animate';
   export let name;
 
   let products = [
@@ -32,12 +34,6 @@
   function noop() {
 
   }
-
-  // edge case of animating re-used DOM nodes:
-  //   if you insert at position 3, that node is the newest information-gain. 
-  //   However, the newest created node is at position n+1 (where n is the previous length of the list). 
-  //   The newest DOM node is animated, but it should be the third (as per my design constraints). 
-  //   Good candidate for alternate behavior than standard css implementation.  
 
   function *script() {
     // [prompt, data-transformation, acknowledgment/transition/inception]
@@ -81,12 +77,13 @@
               <th>rank</th>
             </tr>
         
-            {#each products as p}
-              <tr class="product-row">
+            {#each products as p (p.id)}
+              <tr class="product-row" animate:flip="{{easing: quintInOut}}" >
                 <td>{p.id}</td>
                 <td>
                   {#if p.rank}
-                    <span class="product-rank">{p.rank}</span>
+                    <span class="product-rank"
+                    >{p.rank}</span>
                   {/if}
                 </td>
               </tr>
@@ -115,13 +112,13 @@ table {
   border-spacing: 1rem 0.5rem;
 }
 
-.product-row {
+/* .product-row {
   animation: 1s ease-in 0s 1 both running appear;
 }
 
 .product-rank {
   animation: 1s ease-in 0s 1 both running appear;
-}
+} */
 
 @keyframes appear {
   from { opacity: 0; }
