@@ -1,8 +1,5 @@
 <script>
-  import {quintInOut} from 'svelte/easing';
-  import {flip} from 'svelte/animate';
-  export let name;
-
+  import Table from './Table.svelte';
   let products = [
     {id: 1},
     {id: 5},
@@ -70,27 +67,7 @@
 
       <div class="col-xs-12 col-md-6">
         <h4 class="">Product Table</h4>
-        <table style="margin: 0 auto; font-size: 2rem; text-align: right">
-          <tbody>
-            <tr>
-              <th>id</th>
-              <th>rank</th>
-            </tr>
-        
-            {#each products as p (p.id)}
-              <tr class="product-row" animate:flip="{{easing: quintInOut}}" >
-                <td>{p.id}</td>
-                <td>
-                  {#if p.rank}
-                    <span class="product-rank"
-                    >{p.rank}</span>
-                  {/if}
-                </td>
-              </tr>
-            {/each}
-        
-          </tbody>
-        </table>
+        <Table bind:products></Table>
       </div>
     </div>
   </div>
