@@ -13,10 +13,6 @@
   function addRanks() {
     products = products.map((p, i) => Object.assign({rank: i+1}, p));
   }
-  const dataTransforms = [
-    () => {},
-    addRanks
-  ]
 
   let scriptIndex = 0;
   const linesOfDialouge = [
@@ -24,12 +20,34 @@
     "What happens when we insert product 24 into position 3?",
     "Oh no :("
   ];
-  $: dialouge = linesOfDialouge[scriptIndex];
 
-  function advanceScript() {
-    scriptIndex = (scriptIndex + 1) % linesOfDialouge.length;
-    dataTransforms[scriptIndex]();
+  function noop() {
+
   }
+
+  function *script() {
+    // [prompt, data-transformation, acknowledgment/transition/inception]
+    // what if you had to speak the inception before you could click?
+    yield ["How might we store product ranks in a relational database", noop, "Put it in the data base!"];
+    yield ["What happens when we insert product 24 into position 3?", addRanks, "Constant time insertion"];
+    yield ["Oh no :(", noop, "Oh no :("]; 
+  }
+
+
+  let dialouge = "";
+  let buttonText = "";
+  let op = noop;
+  function advanceScript() {
+    const {value: beat, done: sceneIsOver} = scene.next();
+    if (sceneIsOver) { return }
+
+    [dialouge, op, buttonText] = beat;
+    op();
+  }
+
+  const scene = script();
+  advanceScript();
+
 </script>
 
 <main style="height: 100%;">
@@ -37,7 +55,7 @@
     <div class="row">
       <div class="col-xs-12 col-md-6 order-md-2 vertical-center">
         <p class="lead">{dialouge}</p>
-        <button on:click="{advanceScript}">Put it in the Database!</button>
+        <button on:click="{advanceScript}">{buttonText}</button>
       </div>
 
       <div class="col-xs-12 col-md-6">
