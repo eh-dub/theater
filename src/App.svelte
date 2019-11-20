@@ -14,6 +14,14 @@
     products = products.map((p, i) => Object.assign({rank: i+1}, p));
   }
 
+  function insertRow(position, row) {
+    return () => {
+      const offset = position - 1;
+      products.splice(offset, 0, row);
+      products = products;
+    }
+  }
+
   let scriptIndex = 0;
   const linesOfDialouge = [
     "How might we store product ranks in a relational database?",
@@ -25,12 +33,18 @@
 
   }
 
+  // edge case of animating re-used DOM nodes:
+  //   if you insert at position 3, that node is the newest information-gain. 
+  //   However, the newest created node is at position n+1 (where n is the previous length of the list). 
+  //   The newest DOM node is animated, but it should be the third (as per my design constraints). 
+  //   Good candidate for alternate behavior than standard css implementation.  
+
   function *script() {
     // [prompt, data-transformation, acknowledgment/transition/inception]
     // what if you had to speak the inception before you could click?
     yield ["How might we store product ranks in a relational database", noop, "Put it in the data base!"];
     yield ["What happens when we insert product 24 into position 3?", addRanks, "Constant time insertion"];
-    yield ["Oh no :(", noop, "Oh no :("]; 
+    yield ["Oh no :(", insertRow(3, {id: 24, rank: 3}), "Oh no :("]; 
   }
 
 
