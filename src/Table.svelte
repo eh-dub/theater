@@ -22,7 +22,6 @@ export let name = "";
         <td>
           {#if p.rank}
             <span class="product-rank"
-                  class:wrong-value="{p.isIncorrectValue}"
                   class:strike="{p.isIncorrectValue}"
             >{p.rank}</span>
           {/if}
@@ -34,11 +33,6 @@ export let name = "";
 </table>
 
 <style>
-/* .wrong-value {
-  text-decoration-color: red;
-  text-decoration-line: line-through;
-  transition: text-decoration-line 2s;
-} */
 
 @keyframes strike{
   0%   { width : 0; }
@@ -56,9 +50,6 @@ export let name = "";
   position: absolute;
   right: 0;
   top: 50%;
-  /* animation: 4s linear 1s strike; */
-  /* animation: 3s linear 1s 1 running strike; */
-  /* animation: 3s linear 1s 2 reverse both paused strike; */
   animation-name: strike;
   animation-duration: 0.5s;
   animation-timing-function: ease-in;

@@ -27,14 +27,37 @@
 
   // the genericization of choreograph is v interesting.
   // the data-type defines a dsl of transforms
-  function choreograph(filter, transform, interval) {
+  // now there is a second level of nesting which means that every time a
+  // transform is applied, the changes to other products is lost
+  // need more robust state management.
+  // could I use a generator and a store?
+  // generate the instantiated transforms for each product (this would eliminate one of the nestings)
+  function choreograph(filter, transforms, interval) {
     return () => {
-      const affected = products
-        .forEach((v, i) => {
-          if (filter(v)) {
-           products[i] = transform(products[i]); 
+
+      const sequences = transforms.map((t, ti) => {
+        return products.map((v, i) => {
+          if (filter(v, i)) {
+            return () => {
+              window.setTimeout(() => {
+                products[i] = t(products[i]);
+              }, interval*i + (interval * products.length * ti))
+            }
+          } else {
+            return noop;
           }
+        });
+      })
+        
+
+      sequences.forEach(sequence => {
+        sequence.forEach(s => {
+          s();
         })
+      }); 
+
+
+      
     }
   }
 
@@ -46,16 +69,24 @@
     let line = "How might we store product ranks in a relational database";
     yield [line, addRanks, "Put it in the data base!"];
 
-    line = "What happens when we insert product 24 into position 3?";
-    yield [line, insertRow(3, {id: 24, rank: 3}), "Constant time insertion"];
+    line = "What happens when we insert product 24 into position 7?";
+    yield [line, insertRow(7, {id: 24, rank: 7}), "Constant time insertion!"];
 
-    line = "Product 23 and 9 both have the same rank. Assume all products must have unique ranks.";
+    line = "What happens when we insert product 7 into position 1?"
+    yield [line, insertRow(1, {id: 7, rank: 1}), "Oh no :("];
+
+    line = "Product 7 and 1 both have the same rank. Assume all products must have unique ranks.";
     yield [line, noop, "What is the time complexity of fixing this?"];
 
     line = "Restoring unique ids is a linear time operation under this approach.";
     yield [ line
-          , choreograph((p) => p.id === 9, (p) => Object.assign(p, {isIncorrectValue: true}, 100))
-          , "Oh No :)"]
+          , choreograph((p, i) => i >= 1
+                       ,[ (p) => Object.assign(p, {isIncorrectValue: true})
+                        , (p) => Object.assign(p, {isIncorrectValue: false, rank: p.rank+1})
+                        ]
+                       , 200)
+          , "Oh No :("];
+    
   }
 
   let dialouge = "";
