@@ -1,6 +1,6 @@
 <script>
 import {flip} from 'svelte/animate';
-import {quintInOut} from 'svelte/easing';
+import {quadInOut} from 'svelte/easing';
 
 export let products = [];
 export let name = "";
@@ -9,7 +9,7 @@ export let name = "";
 {#if name !== ""}
   <h4 class="">{name} Table</h4>
 {/if}
-<table style="margin: 0 auto; font-size: 2rem; text-align: right">
+<table style="margin: 0 auto; font-size: 1.5rem; text-align: right">
   <tbody>
     <tr>
       <th>id</th>
@@ -17,13 +17,13 @@ export let name = "";
     </tr>
 
     {#each products as p (p.id)}
-      <tr class="product-row" animate:flip="{{easing: quintInOut}}" >
+      <tr class="product-row" animate:flip="{{easing: quadInOut}}" >
         <td>{p.id}</td>
         <td>
           {#if p.rank}
             <span class="product-rank"
                   class:strike="{p.isIncorrectValue}"
-            >{p.rank}</span>
+            >{String(p.rank)}</span>
           {/if}
         </td>
       </tr>
@@ -33,6 +33,13 @@ export let name = "";
 </table>
 
 <style>
+table {
+  border-collapse: separate;
+  border-spacing: 1rem 0.5rem;
+}
+
+.product-row {
+}
 
 @keyframes strike{
   0%   { width : 0; }

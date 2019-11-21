@@ -4,9 +4,6 @@
     {id: 1},
     {id: 5},
     {id: 9},
-    {id: 2},
-    {id: 23},
-    {id: 11},
   ]
 
   function addRanks() {
@@ -21,17 +18,8 @@
     }
   }
 
-  function noop() {
+  function noop() { }
 
-  }
-
-  // the genericization of choreograph is v interesting.
-  // the data-type defines a dsl of transforms
-  // now there is a second level of nesting which means that every time a
-  // transform is applied, the changes to other products is lost
-  // need more robust state management.
-  // could I use a generator and a store?
-  // generate the instantiated transforms for each product (this would eliminate one of the nestings)
   function choreograph(filter, transforms, interval) {
     return () => {
 
@@ -40,7 +28,7 @@
           if (filter(v, i)) {
             return () => {
               window.setTimeout(() => {
-                products[i] = t(products[i]);
+                products[i] = t(products[i], i);
               }, interval*i + (interval * products.length * ti))
             }
           } else {
@@ -48,55 +36,117 @@
           }
         });
       })
-        
 
       sequences.forEach(sequence => {
         sequence.forEach(s => {
           s();
         })
       }); 
-
-
       
     }
   }
 
+  // replaying a scene could be helpful
+
   function *script() {
-    // [before click, before click, what you click on]
-    // [after click, after click, what you are confronted with next]
     // [prompt, data-transformation, acknowledgment/transition/inception]
-    // what if you had to speak the inception before you could click?
     let line = "How might we store product ranks in a relational database";
     yield [line, addRanks, "Put it in the data base!"];
 
-    line = "What happens when we insert product 24 into position 7?";
-    yield [line, insertRow(7, {id: 24, rank: 7}), "Constant time insertion!"];
+    line = "What happens when we insert product 24 into position 4?";
+    yield [line, insertRow(7, {id: 24, rank: 4}), "Constant time insertion!"];
 
     line = "What happens when we insert product 7 into position 1?"
-    yield [line, insertRow(1, {id: 7, rank: 1}), "Oh no :("];
+    yield [line, insertRow(1, {id: 7, rank: 1}), "Constant time insertion?"];
 
     line = "Product 7 and 1 both have the same rank. Assume all products must have unique ranks.";
-    yield [line, noop, "What is the time complexity of fixing this?"];
-
-    line = "Restoring unique ids is a linear time operation under this approach.";
     yield [ line
           , choreograph((p, i) => i >= 1
                        ,[ (p) => Object.assign(p, {isIncorrectValue: true})
                         , (p) => Object.assign(p, {isIncorrectValue: false, rank: p.rank+1})
                         ]
                        , 200)
-          , "Oh No :("];
+          , "What is the time complexity of fixing this?"];
+
+    line = "It is a linear time operation.";
+    yield [ line
+          , noop
+          , "Oh no :("];
+
+    // how might we treat these like the choreography?
+    // it would be great if these happened one after another
+    line = "Ranking is a relative measurement. To determine the first item we can look at the lowest number. Can you think of a number lower than 1?";
+    yield [ line
+          , () => {
+            insertRow(1, {id: 77, rank: -1})()
+          }
+          , "Oh yeah!"
+          ]
     
+    line = "However, this doesn't help if we insert Product 6 into position 3.";
+    yield [ line
+          , () => {
+            insertRow(4, {id: 6, rank: 3})();
+            choreograph( (p, i) => i >= 4
+                       , [ (p) => Object.assign(p, {isIncorrectValue: true})
+                         , (p) => Object.assign(p, {isIncorrectValue: false, rank: p.rank+1})
+                         ]
+                       , 200
+                       )()
+          }
+          , "Oh no :("
+          ];
+    
+    line = "How might we achieve constant time insertion for any rank?"
+    yield [ line
+          , noop
+          , "That's Impossible!"
+          ]
+    
+    line = "What if we create some room?"
+    yield [ line
+          , choreograph( (p, i) => true
+                       , [(p) => Object.assign(p, {rank: p.rank*8})]
+                       , 200)
+          , "I'm listening..."
+          ]
+    line = "How many constant time insertions does this buy us per position?"
+    yield [ line
+          , () => {
+            insertRow(3, {id: 4, rank: 12})();
+            insertRow(3, {id: 3, rank: 10})();
+            insertRow(3, {id: 2, rank: 9})();
+          }
+          , "log(8) = 3"
+          ]
+    line = "And that's one way to amortize a linear time update"
+    yield [ line
+          , choreograph( (p, i) => true
+                       , [(p, i ) => Object.assign(p, {rank: (i+1)*1024})]
+                       , 200
+          )
+          , "Neat!"
+          ]
   }
+
+  // BUG: ranks of 0 don't render the string "0". it just shows nothing
 
   let dialouge = "";
   let buttonText = "";
   let op = noop;
   function advanceScript() {
     const {value: beat, done: sceneIsOver} = scene.next();
-    if (sceneIsOver) { return }
+    if (sceneIsOver) { 
+     
+     op = () => {
+       products = [];
+       dialouge = "I hope you enjoyed this demo :)"
+       buttonText = "I did!";
+     }
+    } else {
+      [dialouge, op, buttonText] = beat;
+    }
 
-    [dialouge, op, buttonText] = beat;
   }
 
   function executeOp() {
@@ -126,27 +176,11 @@
 </main>
 
 <style>
-main {
-}
-
 .vertical-center {
   display: flex;
   flex-flow: column nowrap;
   justify-content: center;
 }
-
-table {
-  border-collapse: separate;
-  border-spacing: 1rem 0.5rem;
-}
-
-/* .product-row {
-  animation: 1s ease-in 0s 1 both running appear;
-}
-
-.product-rank {
-  animation: 1s ease-in 0s 1 both running appear;
-} */
 
 @keyframes appear {
   from { opacity: 0; }
