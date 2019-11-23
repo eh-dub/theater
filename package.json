@@ -37,6 +37,7 @@
     "transform": {
       "^.+\\.svelte$": ["jest-transform-svelte", { "debug": true }]
     },
+    "moduleDirectories": ["node_modules", "<rootDir>", "<rootDir>/src"],
     "moduleFileExtensions": [ "js", "svelte", "ts" ],
     "setupFilesAfterEnv": [
       "@testing-library/jest-dom/extend-expect"

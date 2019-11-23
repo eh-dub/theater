@@ -1,7 +1,69 @@
+// UI to write the body of *script
+// how might the idea generalize beyond tables?
+// Could it be an explanatory medium comrpised of computation
+//    that is an instantatian of the class that has spawned
+//    libraries such as D3, Vega, 
 
 
 
+// <!-- @TODO:
+//   - write tests
+//   - make button position static
+//   - refactor script into separate file
+//   - clean up abstraction such that multiple row insertions can be choreographed
+//   - why doesn't 0 render?
+//  -->
+import {products} from './products.js';
+
+function noop() { }
+
+function choreograph(filter, transforms, interval) {
+  return (products) => {
+
+    const sequences = transforms.map((t, ti) => {
+      return products.map((v, i) => {
+        if (filter(v, i)) {
+          return () => {
+            window.setTimeout(() => {
+              products[i] = t(products[i], i);
+            }, interval*i + (interval * products.length * ti))
+          }
+        } else {
+          return noop;
+        }
+      });
+    })
+
+    sequences.forEach(sequence => {
+      sequence.forEach(s => {
+        s();
+      })
+    }); 
+    
+  }
+}
+
+function addRanks() {
+  products.update(ps => ps.map((p, i) => Object.assign({rank: i+1}, p)));
+}
+
+
+// script monad? :O
+// just write out the monad laws. ask sandy about his game. it was a kind of script
 export function *script() {
+
+  function insertRow(position, row) {
+    return () => {
+      const offset = position - 1;
+      products.update(ps => {
+        ps.splice(offset, 0, row);
+        return ps;
+      })
+    }
+  }
+
+  
+
   // [prompt, data-transformation, acknowledgment/transition/inception]
   let line = "How might we store product ranks in a relational database";
   yield [line, addRanks, "Put it in the data base!"];
@@ -14,11 +76,13 @@ export function *script() {
 
   line = "Product 7 and 1 both have the same rank. Assume all products must have unique ranks.";
   yield [ line
-        , choreograph((p, i) => i >= 1
-                     ,[ (p) => Object.assign(p, {isIncorrectValue: true})
-                      , (p) => Object.assign(p, {isIncorrectValue: false, rank: p.rank+1})
-                      ]
-                     , 200)
+        , () => {
+            choreograph((p, i) => i >= 1
+                      ,[ (p) => Object.assign(p, {isIncorrectValue: true})
+                        , (p) => Object.assign(p, {isIncorrectValue: false, rank: p.rank+1})
+                        ]
+                      , 200)(products)
+          }
         , "What is the time complexity of fixing this?"];
 
   line = "Restoring unique ids is a linear time operation under this approach.";
@@ -45,7 +109,7 @@ export function *script() {
                        , (p) => Object.assign(p, {isIncorrectValue: false, rank: p.rank+1})
                        ]
                      , 200
-                     )()
+                     )(products)
         }
         , "Oh no :("
         ]

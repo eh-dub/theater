@@ -14,18 +14,19 @@ test("shows proper title when rendered", () => {
   expect(getByText('Data Table')).toBeInTheDocument();
 })
 
-// // Note: This is as an async test as we are using `fireEvent`
-// test('changes button text on click', async () => {
-//   const { getByText } = render(Comp, { props: { name: 'World' } })
-//   const button = getByText('Button')
+test("creates 0 rows for 0 products", () => {
+  let {container} = render(Table, {props: {products: []} })
+  expect(container.querySelectorAll('.product-row').length).toBe(0); 
+});
 
-//   // Using await when firing events is unique to the svelte testing library because
-//   // we have to wait for the next `tick` so that Svelte flushes all pending state changes.
-//   await fireEvent.click(button)
+test("creates 1 row for for 1 product", () => {
+  let {container} = render(Table, {props: { products: [{id: 1, rank: 5}]} } )
+  expect(container.querySelectorAll('.product-row').length).toBe(1); 
+});
 
-//   expect(button).toHaveTextContent('Button Clicked')
-// })
+test("creates 8 row for for 8 product", () => {
+  let products = [{}, {}, {}, {}, {}, {}, {}, {}];
+  let {container} = render(Table, {props: { products}  } )
+  expect(container.querySelectorAll('.product-row').length).toBe(8); 
+});
 
-test('returns true', () => {
-  expect(true).toBe(true);
-})
