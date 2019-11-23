@@ -7,61 +7,65 @@
 
 
 // <!-- @TODO:
-//   - write tests
 //   - make button position static
-//   - refactor script into separate file
 //   - clean up abstraction such that multiple row insertions can be choreographed
 //   - why doesn't 0 render?
 //  -->
-import {products} from './products.js';
+import { products as productStore } from './products.js';
 
 function noop() { }
 
-function choreograph(filter, transforms, interval) {
-  return (products) => {
-
-    const sequences = transforms.map((t, ti) => {
-      return products.map((v, i) => {
-        if (filter(v, i)) {
-          return () => {
-            window.setTimeout(() => {
-              products[i] = t(products[i], i);
-            }, interval*i + (interval * products.length * ti))
-          }
-        } else {
-          return noop;
-        }
-      });
-    })
-
-    sequences.forEach(sequence => {
-      sequence.forEach(s => {
-        s();
-      })
-    }); 
-    
-  }
-}
 
 function addRanks() {
-  products.update(ps => ps.map((p, i) => Object.assign({rank: i+1}, p)));
+  productStore.update(ps => ps.map((p, i) => Object.assign({rank: i+1}, p)));
 }
 
+function insertRow(position, row) {
+  return () => {
+    const offset = position - 1;
+    productStore.update(ps => {
+      ps.splice(offset, 0, row);
+      return ps;
+    })
+  }
+}
 
 // script monad? :O
 // just write out the monad laws. ask sandy about his game. it was a kind of script
 export function *script() {
 
-  function insertRow(position, row) {
+  let products = [];
+  let unsubscribe = productStore.subscribe(ps => products = ps);
+
+  function choreograph(filter, transforms, interval) {
     return () => {
-      const offset = position - 1;
-      products.update(ps => {
-        ps.splice(offset, 0, row);
-        return ps;
+  
+      const sequences = transforms.map((t, ti) => {
+        return products.map((v, i) => {
+          if (filter(v, i)) { 
+            return () => {
+              window.setTimeout(() => {
+                productStore.update(ps => {
+                  ps[i] = t(ps[i], i);
+                  return ps;
+                })
+                // products[i] = t(products[i], i);
+              }, interval*i + (interval * products.length * ti))
+            }
+          } else {
+            return noop;
+          }
+        });
       })
+  
+      sequences.forEach(sequence => {
+        sequence.forEach(s => {
+          s();
+        })
+      }); 
+      
     }
   }
-
   
 
   // [prompt, data-transformation, acknowledgment/transition/inception]
@@ -81,7 +85,7 @@ export function *script() {
                       ,[ (p) => Object.assign(p, {isIncorrectValue: true})
                         , (p) => Object.assign(p, {isIncorrectValue: false, rank: p.rank+1})
                         ]
-                      , 200)(products)
+                      , 200)()
           }
         , "What is the time complexity of fixing this?"];
 
@@ -109,9 +113,11 @@ export function *script() {
                        , (p) => Object.assign(p, {isIncorrectValue: false, rank: p.rank+1})
                        ]
                      , 200
-                     )(products)
+                     )()
         }
         , "Oh no :("
         ]
+
+  unsubscribe();
   
 }
