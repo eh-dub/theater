@@ -1,5 +1,12 @@
+<!-- @TODO:
+  - write tests
+  - make button position static
+  - refactor script into separate file
+  - clean up abstraction such that multiple row insertions can be choreographed
+  - why doesn't 0 render?
+ -->
 <script>
-  import Table from './Table.svelte';
+  import Table from './Table';
   let products = [
     {id: 1},
     {id: 5},
