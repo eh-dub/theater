@@ -6,36 +6,33 @@
 
 
 
-// <!-- @TODO:
-//   - make button position static
-//   - clean up abstraction such that multiple row insertions can be choreographed
-//   - why doesn't 0 render?
-//  -->
-import { products as productStore } from './products.js';
+// TODO:
+// clean up abstraction such that multiple row insertions can be choreographed
+// import { products as productStore } from './products.js';
 
 function noop() { }
 
 
-function addRanks() {
-  productStore.update(ps => ps.map((p, i) => Object.assign({rank: i+1}, p)));
-}
-
-function insertRow(position, row) {
-  return () => {
-    const offset = position - 1;
-    productStore.update(ps => {
-      ps.splice(offset, 0, row);
-      return ps;
-    })
-  }
-}
-
 // script monad? :O
 // just write out the monad laws. ask sandy about his game. it was a kind of script
-export function *script() {
+export function *script(productStore) {
 
   let products = [];
   let unsubscribe = productStore.subscribe(ps => products = ps);
+
+  function addRanks() {
+    productStore.update(ps => ps.map((p, i) => Object.assign({rank: i+1}, p)));
+  }
+
+  function insertRow(position, row) {
+    return () => {
+      const offset = position - 1;
+      productStore.update(ps => {
+        ps.splice(offset, 0, row);
+        return ps;
+      })
+    }
+  }
 
   function choreograph(filter, transforms, interval) {
     return () => {

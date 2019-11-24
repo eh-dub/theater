@@ -1,17 +1,14 @@
 <script>
+  //   - make button position static
+  // replaying a scene could be helpful
+  // BUG: ranks of 0 don't render the string "0". it just shows nothing
+
   import {writable} from 'svelte/store'
-  // what's a regex that will enable transforms of 
-  // svelte components through the index. can it be done?
-  // should it be done?
   import Table from './Table/Table.svelte';
-  // import {script} from './script.js';
   export let script = function* () { };
   export let products = writable([]);
 
   function noop() { }
-
-  // replaying a scene could be helpful
-  // BUG: ranks of 0 don't render the string "0". it just shows nothing
 
   let dialouge = "";
   let buttonText = "";
@@ -21,8 +18,6 @@
     if (sceneIsOver) { 
      
      op = () => {
-      //  products = [];
-      //  products.update(ps => []);
        dialouge = "I hope you enjoyed this demo :)"
        buttonText = "I did!";
      }
@@ -37,7 +32,7 @@
     advanceScript();
   }
 
-  const scene = script();
+  const scene = script(products);
   advanceScript();
 
 </script>
