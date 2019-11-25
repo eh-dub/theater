@@ -55,8 +55,8 @@
 
 <style>
 main {
-  background-color: rgba(10, 10, 10, 0.6);
 }
+
 .vertical-center {
   display: flex;
   flex-flow: column nowrap;
