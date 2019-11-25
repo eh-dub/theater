@@ -7,7 +7,7 @@ export let name = "";
 </script>
 
 {#if name !== ""}
-  <h4 class="">{name} Table</h4>
+  <h4 class="text-center">{name} Table</h4>
 {/if}
 <table style="margin: 0 auto; font-size: 1.5rem; text-align: right">
   <tbody>
@@ -18,7 +18,7 @@ export let name = "";
 
     {#each products as p (p.id)}
       <tr class="product-row" animate:flip="{{easing: quadInOut}}" >
-        <td>{p.id}</td>
+        <td class="product-id">{p.id}</td>
         <td>
           {#if p.rank}
             <span class="product-rank"

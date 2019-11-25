@@ -38,23 +38,44 @@
 </script>
 
 <main style="height: 100%;">
+  {#each $products as {id, rank}}
+    <div style="margin: 0 5px">{id} : {rank}</div>
+  {/each}
   <div class="container vertical-center">
     <div class="row">
-      <div class="col-xs-12 col-md-6 order-md-2 vertical-center">
+
+      <div class="col-xs-12 col-md-6" id="table-col">
+        <Table products="{$products}" name="Product"></Table>
+      </div>
+
+      <div class="col-xs-12 col-md-6 order-md-2 vertical-center"
+           id="explanation">
         <p class="lead">{dialouge}</p>
         <button on:click="{executeOp}">{buttonText}</button>
       </div>
 
-      <div class="col-xs-12 col-md-6">
-        <Table products="{$products}" name="Product"></Table>
-      </div>
     </div>
   </div>
   
 </main>
 
 <style>
+#table-col {
+  margin-bottom: 2rem;
+}
+
+button {
+  width: 80%;
+  margin: 0 auto;
+}
+
 main {
+  display: flex; 
+  align-items: center;
+}
+
+p {
+  margin-bottom: 2rem;
 }
 
 .vertical-center {
