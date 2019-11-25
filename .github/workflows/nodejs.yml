@@ -24,7 +24,6 @@ jobs:
         npm test
       env:
         CI: true
-    - name: Jest Snapshots
-      uses: gimenete/github-jest-snapshots@1.0
+
         
 
