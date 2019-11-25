@@ -6,7 +6,7 @@
 
 
 import App from './App.svelte';
-import { render, fireEvent } from '@testing-library/svelte';
+import { render, fireEvent, wait, waitForElement } from '@testing-library/svelte';
 import { writable } from 'svelte/store';
 import { script } from './script';
 // const { script } = require('./script.js');
@@ -143,7 +143,7 @@ test("Between the third and fourth beats, all but the first product have their r
 
 });
 
-test("The 7th beat adds a sixth product", async () => {
+test("After the 6th beat, there are 6 products", async () => {
   const products = [{id: 5}, {id: 9}, {id: 1}];
   const productStore = writable(products);
   const { container } = render(App, {props: { products: productStore
@@ -161,6 +161,16 @@ test("The 7th beat adds a sixth product", async () => {
   await fireEvent.click(button);
 
   expect(button.textContent).toBe("Oh no :(");
+
+  // this sucks. How might we elegantly handle choreography?
+  await wait(() => {}, {interval: 1000});
+
+  const newlyAddedElement = await waitForElement(
+    () => container.querySelectorAll('.product-rank').item(0),
+    { container }
+  );
+
+  expect(newlyAddedElement.textContent).toBe("-1");
 
   const rows = container.querySelectorAll(".product-row");
   expect(rows.length).toBe(6);

@@ -29,6 +29,7 @@
   },
   "dependencies": {
     "babel-preset-jest": "^24.9.0",
+    "lodash": "^4.17.15",
     "sirv-cli": "^0.4.4"
   },
   "scripts": {
