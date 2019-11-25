@@ -1,0 +1,4 @@
+#table-col.svelte-1b5fqk{margin-bottom:2rem}button.svelte-1b5fqk{width:80%;margin:0 auto}main.svelte-1b5fqk{display:flex;align-items:center}p.svelte-1b5fqk{margin-bottom:2rem}.vertical-center.svelte-1b5fqk{display:flex;flex-flow:column nowrap;justify-content:center}@keyframes svelte-1b5fqk-appear{from{opacity:0}to{opacity:1}}
+table.svelte-1e2r9ap{border-collapse:separate;border-spacing:1rem 0.5rem}.product-row.svelte-1e2r9ap{}@keyframes svelte-1e2r9ap-strike{0%{width:0}100%{width:100%}}.strike.svelte-1e2r9ap{position:relative}.strike.svelte-1e2r9ap::after{background:linear-gradient(45deg, rgba(255, 15, 15, 1), rgba(255, 0, 0, 1));content:"";height:0.5rem;left:0;margin-top:calc(0.125em / 2 * -1);position:absolute;right:0;top:50%;animation-name:svelte-1e2r9ap-strike;animation-duration:0.5s;animation-timing-function:ease-in;animation-iteration-count:1;animation-fill-mode:forwards}
+
+/*# sourceMappingURL=bundle.css.map */
