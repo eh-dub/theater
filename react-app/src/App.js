@@ -1,18 +1,18 @@
-import React from 'react';
+import React, {useState} from 'react';
 import logo from './logo.svg';
 import './App.css';
 import Table from './table/Table';
 
+import {script} from './script';
+
 function App() {
   let buttonText = "button";
   let dialouge = "Hello";
-  let products = [ {id: 1, rank:1}
-                 , {id: 2, rank:2}
-                 , {id: 3, rank:3}
-                 ]
   function executeOp() {
 
   }
+  const [scene, setScene] = useState(script());
+  const [products, setProducts] = useState([]);
 
   return (
     <main>
@@ -26,7 +26,12 @@ function App() {
           <div className="col-xs-12 col-md-6 order-md-2 vertical-center"
               id="explanation">
             <p className="lead">{dialouge}</p>
-            <button onClick={executeOp}>{buttonText}</button>
+            <button onClick={() => {
+              const {value, done} = scene.next();
+              
+              setProducts(value);
+              setScene(scene);
+            }}>{buttonText}</button>
           </div>
 
         </div>
