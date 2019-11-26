@@ -1,8 +1,8 @@
 import React from 'react';
 
 function Table(props) {
-  console.log(props);
-  console.log(props.products.map);
+  // console.log(props);
+  // console.log(props.products.map);
   return (
     <div className="Table">
       <h4 className="text-center">{props.name || "Data"} Table</h4>

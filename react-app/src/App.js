@@ -1,23 +1,47 @@
 import React, {useState} from 'react';
-import logo from './logo.svg';
 import './App.css';
 import Table from './table/Table';
 
 import {script} from './script';
 
+// Lead for replaying/scrubbing through the script
+// https://github.com/pelotom/immutagen
 function App() {
-  let buttonText = "button";
-  let dialouge = "Hello";
-  let isSceneOver = false;
+
+  const [scene, setScene] = useState(script());
+  const [products, setProducts] = useState([{id: 1}
+                                           ,{id: 2}
+                                           ,{id: 3}
+                                          ]);
+  const [state, setState] = useState({buttonText: "Let's Start"
+                                    , dialouge: "Managers of online stores constantly adjust the display order of products. The high frequency of updates requires that the execution time of updates is low. This story explains a storage scheme for product ranks that I devised and implemented."
+                                    , finished: false
+                                    , op: () =>{}
+                                    });
+
+
   function executeOp() {
+    if (state.op) state.op(products, setProducts);
+    advanceScene();
+  }
+
+  function advanceScene() {
+    if (state.finished) return;
+
     const {value, done} = scene.next();
-    isSceneOver = done;
-    setState(value);
+
+    if (!done) {
+      setState({...value, finished: false});
+    } else {
+      setState({finished: true
+        , buttonText: "All done!"
+        , dialouge: "Thanks for playing!"
+        , op: () => {}
+        });
+    }
     setScene(scene);
   }
-  const [scene, setScene] = useState(script());
-  // const [products, setProducts] = useState([]);
-  const [state, setState] = useState({products: [], buttonText: "button", dialouge: "hello"});
+
 
   return (
     <main>
@@ -25,7 +49,7 @@ function App() {
         <div className="row">
 
           <div className="col-xs-12 col-md-6" id="table-col">
-            <Table products={state.products} name="Product"></Table>
+            <Table products={products} name="Product"></Table>
           </div>
 
           <div className="col-xs-12 col-md-6 order-md-2 vertical-center"
