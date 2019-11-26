@@ -1,8 +1,22 @@
 import React from 'react';
+import {useSpring, animated} from 'react-spring'
+
+function ProductRow(props) {
+const spring = useSpring({opacity: 1, from: {opacity: 0}})
+return (
+  <animated.tr style={spring} className="product-row"
+      // animate:flip="{{easing: quadInOut}}"
+  >
+    <td className="product-id">{props.id}</td>
+    <td>
+      <animated.span style={spring} className="product-rank"
+      >{props.rank}</animated.span>
+    </td>
+  </animated.tr>
+  )
+};
 
 function Table(props) {
-  // console.log(props);
-  // console.log(props.products.map);
   return (
     <div className="Table">
       <h4 className="text-center">{props.name || "Data"} Table</h4>
@@ -13,18 +27,7 @@ function Table(props) {
             <th>rank</th>
           </tr>
           {props.products.map(({id, rank}, i) => {
-            return (
-              <tr className="product-row" key={i}
-                  // animate:flip="{{easing: quadInOut}}" 
-                >
-                <td className="product-id">{id}</td>
-                <td>
-                    <span className="product-rank"
-                          // class:strike="{p.isIncorrectValue}"
-                      >{rank}</span>
-                </td>
-              </tr>
-            )
+            return <ProductRow id={id} rank={rank} key={i}></ProductRow>
           })}
         </tbody>
       </table>

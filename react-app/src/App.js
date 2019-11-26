@@ -1,4 +1,6 @@
 import React, {useState} from 'react';
+
+
 import './App.css';
 import Table from './table/Table';
 
@@ -6,6 +8,8 @@ import {script} from './script';
 
 // Lead for replaying/scrubbing through the script
 // https://github.com/pelotom/immutagen
+
+// how might I get a "Light table" view a la Keynote
 function App() {
 
   const [scene, setScene] = useState(script());
